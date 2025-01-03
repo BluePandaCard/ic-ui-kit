@@ -301,11 +301,11 @@ export class Select {
       }
     }
 
-    if (this.searchable) {
-      this.searchableSelectInputValue =
-        this.getLabelFromValue(this.currValue as string) ||
-        (this.currValue as string);
-    }
+    // if (this.searchable) {
+    //   this.searchableSelectInputValue =
+    //     this.getLabelFromValue(this.currValue as string) ||
+    //     (this.currValue as string);
+    // }
   }
 
   @Watch("open")
@@ -466,14 +466,14 @@ export class Select {
   }
 
   private emitIcChange = (value: string | string[] | null) => {
-    if (!this.searchable) {
+    // if (!this.searchable) {
       // If "Select all" button clicked, replace value with new value (array of all option values)
       if (this.multiple && !Array.isArray(value) && value !== null) {
         this.handleMultipleSelectChange(value as string);
       } else {
         this.value = value;
       }
-    }
+    // }
 
     clearTimeout(this.debounceIcChange);
     this.debounceIcChange = window.setTimeout(() => {
@@ -988,9 +988,9 @@ export class Select {
   private handleSearchableSelectInput = (event: Event): void => {
     this.searchableSelectInputValue = (event.target as HTMLInputElement).value;
     this.icInput.emit({ value: this.searchableSelectInputValue });
-    this.emitIcChange(this.searchableSelectInputValue);
+    this.emitIcChange(null); // De-select previous selection when input is edited
 
-    this.hiddenInputValue = this.searchableSelectInputValue;
+    this.hiddenInputValue = null;
     this.inputValueToFilter = this.searchableSelectInputValue;
     this.setMenuChange(true);
 
@@ -1287,6 +1287,7 @@ export class Select {
                   onBlur={this.onBlur}
                   form={this.form}
                 ></input>
+                {console.log(this.el.value)}
                 {this.searchableSelectInputValue &&
                   (showClearButton || searchable) && (
                     <div class="clear-button-container">
