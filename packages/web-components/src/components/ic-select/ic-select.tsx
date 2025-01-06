@@ -80,7 +80,7 @@ export class Select {
 
   @State() ariaActiveDescendant: string;
   @State() clearButtonFocused: boolean = false;
-  @State() debounceIcChange: number;
+  @State() debounceIcInput: number;
   @State() hiddenInputValue: string;
   @State() noOptions: IcMenuOption[] = null;
   @State() open: boolean = false;
@@ -270,7 +270,7 @@ export class Select {
   }
 
   /**
-   * The amount of time, in milliseconds, to wait to trigger the `icChange` event after each keystroke.
+   * The amount of time, in milliseconds, to wait to trigger the `icInput` event after each keystroke.
    */
   @Prop() debounce?: number = 0;
   @State() currDebounce = this.debounce;
@@ -300,12 +300,6 @@ export class Select {
         this.currValue = this.value;
       }
     }
-
-    // if (this.searchable) {
-    //   this.searchableSelectInputValue =
-    //     this.getLabelFromValue(this.currValue as string) ||
-    //     (this.currValue as string);
-    // }
   }
 
   @Watch("open")
@@ -456,7 +450,11 @@ export class Select {
     this.blurredBecauseButtonPressed = true;
     this.retryButtonClick = true;
     this.hasSetDefaultValue = true;
-    this.icRetryLoad.emit({ value: this.hiddenInputValue });
+    this.icRetryLoad.emit({
+      value: this.searchable
+        ? this.searchableSelectInputValue
+        : this.hiddenInputValue,
+    });
   };
 
   private updateOnChangeDebounce(newValue: number) {
@@ -466,26 +464,23 @@ export class Select {
   }
 
   private emitIcChange = (value: string | string[] | null) => {
-    // if (!this.searchable) {
-      // If "Select all" button clicked, replace value with new value (array of all option values)
-      if (this.multiple && !Array.isArray(value) && value !== null) {
-        this.handleMultipleSelectChange(value as string);
-      } else {
-        this.value = value;
-      }
-    // }
+    // If "Select all" button clicked, replace value with new value (array of all option values)
+    if (this.multiple && !Array.isArray(value) && value !== null) {
+      this.handleMultipleSelectChange(value as string);
+    } else {
+      this.value = value;
+    }
 
-    clearTimeout(this.debounceIcChange);
-    this.debounceIcChange = window.setTimeout(() => {
-      const valueToEmit = this.multiple ? this.value : value;
-      this.icChange.emit({ value: valueToEmit });
-    }, this.currDebounce);
+    const valueToEmit = this.multiple ? this.value : value;
+    this.icChange.emit({ value: valueToEmit });
   };
 
-  private emitImmediateIcChange = (value: string) => {
-    this.value = value;
-    clearTimeout(this.debounceIcChange);
-    this.icChange.emit({ value });
+  private emitIcInput = (value: string) => {
+    clearTimeout(this.debounceIcInput);
+    this.debounceIcInput = window.setTimeout(
+      () => this.icInput.emit({ value }),
+      this.currDebounce
+    );
   };
 
   /**
@@ -616,7 +611,7 @@ export class Select {
 
   private handleNativeSelectChange = (): void => {
     this.icOptionSelect.emit({ value: this.nativeSelectElement.value });
-    this.emitImmediateIcChange(this.nativeSelectElement.value);
+    this.emitIcChange(this.nativeSelectElement.value);
     this.setTextColor();
   };
 
@@ -782,7 +777,7 @@ export class Select {
     this.hasTimedOut = false;
     clearTimeout(this.timeoutTimer);
     this.noOptions = null;
-    this.emitImmediateIcChange(null);
+    this.emitIcChange(null);
     this.icClear.emit();
 
     if (this.searchable) {
@@ -820,7 +815,7 @@ export class Select {
         this.handleFilter();
 
         if (!this.noOptions) {
-          this.emitImmediateIcChange(this.filteredOptions[0].value);
+          this.emitIcChange(this.filteredOptions[0].value);
         }
       }
     } else {
@@ -987,8 +982,12 @@ export class Select {
 
   private handleSearchableSelectInput = (event: Event): void => {
     this.searchableSelectInputValue = (event.target as HTMLInputElement).value;
-    this.icInput.emit({ value: this.searchableSelectInputValue });
-    this.emitIcChange(null); // De-select previous selection when input is edited
+    this.emitIcInput(this.searchableSelectInputValue);
+
+    // De-select previous selection when input is edited
+    if (this.value !== null) {
+      this.emitIcChange(null);
+    }
 
     this.hiddenInputValue = null;
     this.inputValueToFilter = this.searchableSelectInputValue;
