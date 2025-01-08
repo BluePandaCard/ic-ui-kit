@@ -966,6 +966,10 @@ ic-theme,
   --ic-search-bar-filled-text-cursor: var(
     --ic-atoms-input-select-content-text-cursor
   );
+  --ic-search-bar-label-disabled: var(--ic-atoms-input-field-label-disabled);
+  --ic-search-bar-subtitle-disabled: var(
+    --ic-atoms-input-field-label-subtitle-disabled
+  );
 
   /* Select */
   --ic-select-field-background: var(--ic-atoms-input-field-background);
@@ -2324,6 +2328,10 @@ ic-theme,
     --ic-search-bar-filled-text-cursor: var(
       --ic-atoms-input-select-content-text-cursor
     );
+    --ic-search-bar-label-disabled: var(--ic-atoms-input-field-label-disabled);
+    --ic-search-bar-subtitle-disabled: var(
+      --ic-atoms-input-field-label-subtitle-disabled
+    );
 
     /* Select */
     --ic-select-field-background: var(--ic-atoms-input-field-background);
@@ -3656,6 +3664,10 @@ ic-theme,
   --ic-search-bar-clear-button: var(--ic-atoms-input-clear-button);
   --ic-search-bar-filled-text-cursor: var(
     --ic-atoms-input-select-content-text-cursor
+  );
+  --ic-search-bar-label-disabled: var(--ic-atoms-input-field-label-disabled);
+  --ic-search-bar-subtitle-disabled: var(
+    --ic-atoms-input-field-label-subtitle-disabled
   );
 
   /* Select */
