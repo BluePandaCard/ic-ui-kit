@@ -300,6 +300,12 @@ export class Select {
         this.currValue = this.value;
       }
     }
+
+    if (this.searchable && this.value) { // Only if value not null - prevents whole input value being cleared when edited
+      this.searchableSelectInputValue =
+        this.getLabelFromValue(this.currValue as string) ||
+        (this.currValue as string);
+    }
   }
 
   @Watch("open")
@@ -1298,7 +1304,7 @@ export class Select {
                   onBlur={this.onBlur}
                   form={this.form}
                 ></input>
-                {console.log(this.el.value)}
+                {console.log(this.searchableSelectElement?.value)}
                 {this.searchableSelectInputValue &&
                   (showClearButton || searchable) && (
                     <div class="clear-button-container">
