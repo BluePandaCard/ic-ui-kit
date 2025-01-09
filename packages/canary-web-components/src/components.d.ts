@@ -481,6 +481,10 @@ export namespace Components {
          */
         "rangeLabelType"?: IcPaginationLabelTypes;
         /**
+          * If `true`, the pagination bar is set to the first page when the 'items per page' changes
+         */
+        "setToFirstPageOnPaginationChange"?: boolean;
+        /**
           * If `true`, the 'go to page' control should be displayed.
          */
         "showGoToPageControl"?: boolean;
@@ -1224,6 +1228,10 @@ declare namespace LocalJSX {
           * Whether total number of items and current item range or total number of pages and current page is displayed.
          */
         "rangeLabelType"?: IcPaginationLabelTypes;
+        /**
+          * If `true`, the pagination bar is set to the first page when the 'items per page' changes
+         */
+        "setToFirstPageOnPaginationChange"?: boolean;
         /**
           * If `true`, the 'go to page' control should be displayed.
          */
