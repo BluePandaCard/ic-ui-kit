@@ -87,6 +87,7 @@ const PAGINATION_GO_TO_PAGE_TEXT_FIELD_SELECTOR =
   ".go-to-page-holder ic-text-field";
 const PAGINATION_GO_TO_PAGE_BUTTON_SELECTOR = ".go-to-page-holder ic-button";
 const ITEMS_PER_PAGE_SELECTOR = ".items-per-page-input";
+const ACTION_ELEMENT = "action-element";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
 export const BasicDataTable = (dataTableProps?: any): ReactElement => (
@@ -1162,6 +1163,107 @@ describe("IcDataTables", () => {
         capture: "viewport",
       },
     });
+  });
+
+  it("should render a backdrop with circular loading indicator when loadingOption.overlay is set to true", () => {
+    mount(
+      <IcDataTable
+        columns={COLS}
+        data={DATA}
+        caption="Data tables"
+        loadingOptions={{
+          overlay: true,
+        }}
+      />
+    );
+    cy.checkHydrated(DATA_TABLE_SELECTOR);
+
+    cy.get(DATA_TABLE_SELECTOR).invoke("prop", "loading", true);
+
+    cy.findShadowEl(DATA_TABLE_SELECTOR, ".loading-overlay").should(
+      "be.visible"
+    );
+    cy.findShadowEl(DATA_TABLE_SELECTOR, "tbody").should("be.visible");
+    cy.findShadowEl(DATA_TABLE_SELECTOR, "ic-loading-indicator")
+      .shadow()
+      .find(".ic-loading-circular-outer")
+      .should("be.visible");
+
+    cy.get(DATA_TABLE_SELECTOR).invoke("prop", "data", LONG_DATA);
+
+    cy.wait(1000);
+
+    cy.findShadowEl(DATA_TABLE_SELECTOR, ".loading-overlay").should(
+      "be.not.exist"
+    );
+    cy.findShadowEl(DATA_TABLE_SELECTOR, "tbody").should("be.visible");
+    cy.findShadowEl(DATA_TABLE_SELECTOR, "ic-loading-indicator").should(
+      "not.exist"
+    );
+  });
+
+  it("should not render an overlay with circular loading indicator when loadingOption.overlay is set to false", () => {
+    mount(
+      <IcDataTable
+        columns={COLS}
+        data={DATA}
+        caption="Data tables"
+        loadingOptions={{
+          overlay: false,
+        }}
+      />
+    );
+    cy.checkHydrated(DATA_TABLE_SELECTOR);
+
+    cy.get(DATA_TABLE_SELECTOR).invoke("prop", "loading", true);
+
+    cy.findShadowEl(DATA_TABLE_SELECTOR, ".loading-overlay").should(
+      "not.exist"
+    );
+    cy.findShadowEl(DATA_TABLE_SELECTOR, "tbody").should("not.exist");
+    cy.findShadowEl(DATA_TABLE_SELECTOR, "ic-loading-indicator")
+      .shadow()
+      .find(".ic-loading-circular-outer")
+      .should("be.visible");
+  });
+
+  it("should render an overlay with circular loading indicator when loadingOption.overlay is set to true and no data is set", () => {
+    mount(
+      <IcDataTable
+        columns={COLS}
+        data={[]}
+        caption="Data tables"
+        loadingOptions={{
+          overlay: true,
+        }}
+      />
+    );
+    cy.checkHydrated(DATA_TABLE_SELECTOR);
+
+    cy.get(DATA_TABLE_SELECTOR).invoke("prop", "loading", true);
+
+    cy.findShadowEl(DATA_TABLE_SELECTOR, ".loading-overlay").should(
+      "be.visible"
+    );
+    cy.findShadowEl(DATA_TABLE_SELECTOR, "tbody").should("not.exist");
+    cy.findShadowEl(DATA_TABLE_SELECTOR, "ic-empty-state").should("be.visible");
+    cy.findShadowEl(DATA_TABLE_SELECTOR, "ic-loading-indicator")
+      .shadow()
+      .find(".ic-loading-circular-outer")
+      .should("be.visible");
+
+    cy.get(DATA_TABLE_SELECTOR).invoke("prop", "data", LONG_DATA);
+
+    cy.wait(1000);
+
+    cy.findShadowEl(DATA_TABLE_SELECTOR, ".loading-overlay").should(
+      "not.exist"
+    );
+    cy.findShadowEl(DATA_TABLE_SELECTOR, "tbody").should("be.visible");
+    cy.findShadowEl(DATA_TABLE_SELECTOR, "ic-empty-state").should("not.exist");
+    cy.findShadowEl(DATA_TABLE_SELECTOR, "ic-loading-indicator").should(
+      "not.exist"
+    );
   });
 });
 
